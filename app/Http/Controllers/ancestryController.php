@@ -98,7 +98,7 @@ class ancestryController extends Controller
                 $image = asset(\Storage::url($productImage));//create image url
 
                 $localurl = $this->filePath($listimg[$key]->images);
-                Storage::delete($localurl->basename);
+                Storage::delete($localurl['basename']);
 
                 memories::where('ancestor_id', $request->newUser)->where('id', $list[$key]->id)->update(['images' => $image]);
             }
