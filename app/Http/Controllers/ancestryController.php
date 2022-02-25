@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ancestor;
 use App\Models\memories;
 use App\Models\relations;
+use Illuminate\Support\Facades\Storage;
 
 class ancestryController extends Controller
 {
