@@ -17,6 +17,10 @@ use App\Http\Controllers\userController;
 |
 */
 
+
+
+
+
 // public-------------------------------------------------------------
     Route::get('/index', [ancestryController::class, 'index']);
     Route::get('/show/{id}', [ancestryController::class, 'show']);

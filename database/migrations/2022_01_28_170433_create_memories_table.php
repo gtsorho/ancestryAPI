@@ -15,6 +15,7 @@ class CreateMemoriesTable extends Migration
     {
         Schema::create('memories', function (Blueprint $table) {
             $table->id();
+            $table->string('fileId')->nullable();
             $table->unsignedBigInteger('ancestor_id');
             $table->string('images')->nullable();
             $table->string('imageDescription')->nullable();

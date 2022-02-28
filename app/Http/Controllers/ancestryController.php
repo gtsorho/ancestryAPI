@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\ancestor;
 use App\Models\memories;
 use App\Models\relations;
+use ImageKit\ImageKit;
 use Illuminate\Support\Facades\Storage;
+// require_once __DIR__ . '/vendor/autoload.php';
 
 class ancestryController extends Controller
 {
@@ -87,22 +89,46 @@ class ancestryController extends Controller
         return $fileParts;
     }
 
+    // public function storeimg(request $request){
+    //     $list = memories::where('ancestor_id', $request->newUser)->get('id');
+    //     $listimg = memories::where('ancestor_id', $request->newUser)->get('images');
+
+    //     // return $request->images;
+    //     // if($request->hasFile('images')){
+    //         foreach($request->images as $key => $value){
+    //             $productImage = $value->store('uploads', 'public'); //create image path
+    //             $image = asset(\Storage::url($productImage));//create image url
+
+    //             $localurl = $this->filePath($listimg[$key]->images);
+    //             Storage::delete($localurl['basename']);
+
+    //             memories::where('ancestor_id', $request->newUser)->where('id', $list[$key]->id)->update(['images' => $image]);
+    //         }
+    //     // }
+    //     return response()->json( memories::where('ancestor_id', $request->newUser)->get(), 200);
+    // }
+
     public function storeimg(request $request){
         $list = memories::where('ancestor_id', $request->newUser)->get('id');
-        $listimg = memories::where('ancestor_id', $request->newUser)->get('images');
+        $listimg = memories::where('ancestor_id', $request->newUser)->get('fileId');
 
-        // return $request->images;
-        // if($request->hasFile('images')){
-            foreach($request->images as $key => $value){
-                $productImage = $value->store('uploads', 'public'); //create image path
-                $image = asset(\Storage::url($productImage));//create image url
-
-                $localurl = $this->filePath($listimg[$key]->images);
-                Storage::delete($localurl['basename']);
-
-                memories::where('ancestor_id', $request->newUser)->where('id', $list[$key]->id)->update(['images' => $image]);
-            }
-        // }
+        $imageKit = new ImageKit(
+            "public_XczwHKAN1MLu8G1sWy5qCqWh6vo=",
+            "private_s5mjOPJYX/iZZ9AC70OMo5HrCSk=",
+            "https://ik.imagekit.io/1ae179oxgxno"
+        );
+        
+        foreach($listimg as  $fileId) {
+            $imageKit->deleteFile($fileId['fileId']);
+        }
+        foreach($request->images as $key => $value){
+            $image = base64_encode(file_get_contents($value));
+            $res = $imageKit->upload(array(
+                "file" =>$image, // required, can be base64 or binary or a remote url
+                "fileName" => "image.jpg", // required
+            ));
+            memories::where('ancestor_id', $request->newUser)->where('id', $list[$key]->id)->update(['images' => $res->success->url, 'fileId'=>$res->success->fileId]);
+        }
         return response()->json( memories::where('ancestor_id', $request->newUser)->get(), 200);
     }
 
